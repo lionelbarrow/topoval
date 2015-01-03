@@ -14,6 +14,16 @@ class Spy
     true
   end
 
+  def returns_true_2
+    @calls["returns_true_2"] += 1
+    true
+  end
+
+  def returns_true_3
+    @calls["returns_true_3"] += 1
+    true
+  end
+
   def returns_false
     @calls["returns_false"] += 1
     false
