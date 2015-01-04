@@ -5,7 +5,7 @@ module Topoval
       @graph_builder = GraphBuilder.new
     end
 
-    def add_step(method_name, dependencies)
+    def add_step(method_name, dependencies=[])
       @graph_builder.add_method(method_name, dependencies)
     end
 

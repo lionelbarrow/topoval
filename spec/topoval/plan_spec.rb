@@ -2,9 +2,39 @@ require "spec_helper"
 
 describe Topoval::Plan do
   describe "add_step" do
-    it "adds a method and its dependencies"
+    it "adds a method and its dependencies" do
+      spy = Spy.new
 
-    it "is not order dependent"
+      plan = Topoval::Plan.new(spy)
+      plan.add_step("returns_true")
+      plan.add_step("returns_true_2", ["returns_true"])
+      plan.execute!
+
+      expect( spy.calls("returns_true") ).to eq 1
+      expect( spy.calls("returns_true_2") ).to eq 1
+    end
+
+    it "is not order dependent" do
+      spy = Spy.new
+
+      plan = Topoval::Plan.new(spy)
+      plan.add_step("returns_true_2", ["returns_true"])
+      plan.add_step("returns_true")
+      plan.execute!
+
+      expect( spy.calls("returns_true") ).to eq 1
+      expect( spy.calls("returns_true_2") ).to eq 1
+    end
+
+    it "allows an empty list of dependencies" do
+      spy = Spy.new
+
+      plan = Topoval::Plan.new(spy)
+      plan.add_step("returns_true")
+      plan.execute!
+
+      expect( spy.calls("returns_true") ).to eq 1
+    end
   end
 
   describe "execute!" do
@@ -12,7 +42,7 @@ describe Topoval::Plan do
       spy = Spy.new
 
       plan = Topoval::Plan.new(spy)
-      plan.add_step("returns_true", [])
+      plan.add_step("returns_true")
       plan.add_step("returns_true_2", ["returns_true"])
       plan.add_step("returns_false", [])
       plan.add_step("raises_error", ["returns_false"])
@@ -29,9 +59,9 @@ describe Topoval::Plan do
       spy = Spy.new
 
       plan = Topoval::Plan.new(spy)
-      plan.add_step("returns_true", [])
+      plan.add_step("returns_true")
       plan.add_step("returns_true_2", ["returns_true"])
-      plan.add_step("returns_false", [])
+      plan.add_step("returns_false")
       plan.add_step("raises_error", ["returns_false"])
 
       plan.execute!(:strategy => Topoval::Strategy::Maximal)
@@ -46,9 +76,9 @@ describe Topoval::Plan do
       spy = Spy.new
 
       plan = Topoval::Plan.new(spy)
-      plan.add_step("returns_true", [])
+      plan.add_step("returns_true")
       plan.add_step("returns_true_2", ["returns_true"])
-      plan.add_step("returns_false", [])
+      plan.add_step("returns_false")
       plan.add_step("raises_error", ["returns_false"])
 
       plan.execute!(:strategy => Topoval::Strategy::Minimal)
